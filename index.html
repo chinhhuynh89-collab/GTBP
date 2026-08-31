@@ -76,6 +76,14 @@
     border-bottom:1px dotted rgba(233,231,214,0.18);
   }
   .byline b{ color:var(--flare); font-weight:600; }
+  .app-footer{
+    text-align:center;
+    font-size:0.68rem;
+    color:#6b7860;
+    margin-top:20px;
+    padding-top:12px;
+    border-top:1px dotted rgba(233,231,214,0.14);
+  }
 
   /* ---- status/trial bar ---- */
   .status-bar{
@@ -398,7 +406,7 @@
     <div class="card">
       <div class="field-row">
         <label>Hệ ly giác</label>
-        <select id="dl-heso"><option value="6000">6000</option><option value="6400">6400</option></select>
+        <select id="dl-heso"><option value="6000">60 00</option><option value="6400">64 00</option></select>
       </div>
       <div class="field-row"><label>Ly giác</label><input type="text" inputmode="decimal" id="dl-lygiac" placeholder="0" data-angle="1"></div>
       <div class="field-row"><label>Độ (tổng)</label><input type="text" inputmode="decimal" id="dl-do" placeholder="0"></div>
@@ -418,7 +426,7 @@
       <h3>Tra theo góc</h3>
       <div class="field-row">
         <label>Hệ ly giác</label>
-        <select id="llg-heso"><option value="6000">6000</option><option value="6400">6400</option></select>
+        <select id="llg-heso"><option value="6000">60 00</option><option value="6400">64 00</option></select>
       </div>
       <div class="field-row"><label>Góc (ly giác)</label><input type="text" inputmode="decimal" id="llg-goc" placeholder="Nhập góc" data-angle="1"></div>
       <div class="msg-error" id="llg-error"></div>
@@ -479,7 +487,7 @@
       </svg>
     </div>
     <div class="card">
-      <div class="field-row"><label>Hệ ly giác</label><select id="ntd-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>Hệ ly giác</label><select id="ntd-heso"><option value="6000">60 00</option><option value="6400">64 00</option></select></div>
       <div class="field-row"><label>xG1</label><input type="text" inputmode="decimal" id="ntd-xg1" placeholder="xG1"></div>
       <div class="field-row"><label>yG1</label><input type="text" inputmode="decimal" id="ntd-yg1" placeholder="yG1"></div>
       <div class="field-row"><label>xG2</label><input type="text" inputmode="decimal" id="ntd-xg2" placeholder="xG2"></div>
@@ -510,7 +518,7 @@
       </svg>
     </div>
     <div class="card">
-      <div class="field-row"><label>Hệ ly giác</label><select id="ttd-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>Hệ ly giác</label><select id="ttd-heso"><option value="6000">60 00</option><option value="6400">64 00</option></select></div>
       <div class="field-row"><label>xG</label><input type="text" inputmode="decimal" id="ttd-xg" placeholder="xG"></div>
       <div class="field-row"><label>yG</label><input type="text" inputmode="decimal" id="ttd-yg" placeholder="yG"></div>
       <div class="field-row"><label>Phương vị (QG)</label><input type="text" inputmode="decimal" id="ttd-qg" placeholder="(QG)" data-angle="1"></div>
@@ -545,7 +553,7 @@
       </svg>
     </div>
     <div class="card">
-      <div class="field-row"><label>Hệ ly giác</label><select id="tg-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>Hệ ly giác</label><select id="tg-heso"><option value="6000">60 00</option><option value="6400">64 00</option></select></div>
       <div class="field-row"><label>Cự ly d (m)</label><input type="text" inputmode="decimal" id="tg-d" placeholder="d"></div>
       <div class="field-row"><label>Góc P</label><input type="text" inputmode="decimal" id="tg-p" placeholder="Góc P" data-angle="1"></div>
       <div class="field-row"><label>Góc Q</label><input type="text" inputmode="decimal" id="tg-q" placeholder="Góc Q" data-angle="1"></div>
@@ -576,7 +584,7 @@
       </svg>
     </div>
     <div class="card">
-      <div class="field-row"><label>Hệ ly giác</label><select id="g1-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>Hệ ly giác</label><select id="g1-heso"><option value="6000">60 00</option><option value="6400">64 00</option></select></div>
       <div class="field-row"><label>ΔAm</label><input type="text" inputmode="decimal" id="g1-am" placeholder="0" value="0" data-angle="1"></div>
       <div class="field-row"><label>xG</label><input type="text" inputmode="decimal" id="g1-xg" placeholder="xG"></div>
       <div class="field-row"><label>yG</label><input type="text" inputmode="decimal" id="g1-yg" placeholder="yG"></div>
@@ -609,7 +617,7 @@
       </svg>
     </div>
     <div class="card">
-      <div class="field-row"><label>Hệ ly giác</label><select id="g2-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>Hệ ly giác</label><select id="g2-heso"><option value="6000">60 00</option><option value="6400">64 00</option></select></div>
       <div class="field-row"><label>ΔAm</label><input type="text" inputmode="decimal" id="g2-am" placeholder="0" value="0" data-angle="1"></div>
       <div class="field-row"><label>xG1</label><input type="text" inputmode="decimal" id="g2-xg1" placeholder="xG1"></div>
       <div class="field-row"><label>yG1</label><input type="text" inputmode="decimal" id="g2-yg1" placeholder="yG1"></div>
@@ -643,7 +651,7 @@
       </svg>
     </div>
     <div class="card">
-      <div class="field-row"><label>Hệ ly giác</label><select id="ghpt-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>Hệ ly giác</label><select id="ghpt-heso"><option value="6000">60 00</option><option value="6400">64 00</option></select></div>
       <div class="field-row"><label>ΔAm</label><input type="text" inputmode="decimal" id="ghpt-am" placeholder="0" value="0" data-angle="1"></div>
       <div class="field-row"><label>xQ1</label><input type="text" inputmode="decimal" id="ghpt-xq1" placeholder="xQ1"></div>
       <div class="field-row"><label>yQ1</label><input type="text" inputmode="decimal" id="ghpt-yq1" placeholder="yQ1"></div>
@@ -670,7 +678,7 @@
     </div>
     <div class="card">
       <div class="info-text" style="color:var(--warn);">
-        🔒 Giải Nghịch Tọa Độ, Giải 1G, Giải 2G và Giao Hội Phía Trước chỉ dùng được khi đang <b>dùng thử còn hạn</b> hoặc đã <b>kích hoạt</b>. Tra Cứu, Giải Tam Giác, Giải Thuận Tọa Độ luôn dùng miễn phí.
+        🔒 Giải Nghịch Tọa Độ, Giải 1G, Giải 2G và Giao Hội Phía Trước chỉ dùng được sau khi đã <b>kích hoạt</b>. Tra Cứu, Giải Tam Giác, Giải Thuận Tọa Độ luôn dùng miễn phí.
       </div>
       <div class="info-text">
         Tác giả mất nhiều thời gian để hoàn thành ứng dụng, ứng dụng không chứa quảng cáo — rất mong bạn mua ủng hộ để tác giả có kinh phí phát triển tiếp. Xin cảm ơn!
@@ -692,6 +700,8 @@
       <button class="btn btn-primary" id="hdm-activate" style="width:100%; margin-top:8px; padding:10px;">Kích Hoạt</button>
     </div>
   </div>
+
+  <footer class="app-footer">© 2026 Huỳnh Công Chính - Trường Quân sự QĐ34. Bảo lưu mọi quyền.</footer>
 
 </div>
 

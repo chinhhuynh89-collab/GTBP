@@ -1,4 +1,4 @@
-const CACHE_NAME = 'giai-toan-pb-v6';
+const CACHE_NAME = 'giai-toan-pb-v7';
 const ASSETS = [
   './',
   './index.html',
