@@ -1,0 +1,6 @@
+# Mã nguồn gốc chưa làm rối — KHÔNG đưa lên repo công khai.
+# index.html chỉ nạp app.obf.js, giữ app.js ở máy để chỉnh sửa về sau.
+app.js
+
+Thumbs.db
+.DS_Store

@@ -1,0 +1,700 @@
+<!--
+  Giải Toán Pháo Binh (phiên bản 3.0) — viết lại từ dự án Kodular gốc (Huỳnh Công Chính)
+  PWA tĩnh, không backend. Xem file KY-THUAT.md (nếu có) để biết bản đồ công thức.
+-->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="author" content="Huỳnh Công Chính">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Giải Toán Pháo Binh</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#232D1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Giải Toán Pháo Binh">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#2B3A21;
+    --forest-deep:#161D10;
+    --moss:#4B5C34;
+    --moss-light:#6C7F4D;
+    --flare:#C8302A;
+    --flare-dark:#8F1F1B;
+    --steel:#C7D0BE;
+    --ink:#1B2013;
+    --paper:#E9E7D6;
+    --paper-dim:#D8D5BF;
+    --ok:#4E8B4A;
+    --warn:#C98A1F;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; touch-action:manipulation;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--forest-deep);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(255,255,255,0.04), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(255,255,255,0.03), transparent 45%);
+    font-family:'Be Vietnam Pro',sans-serif;
+    color:var(--steel);
+    min-height:100vh;
+    padding:14px;
+  }
+  .wrap{ max-width:520px; margin:0 auto; padding-bottom:40px; }
+
+  header{ text-align:center; padding:8px 6px 4px; }
+  header .eyebrow{
+    font-family:'Barlow Condensed',sans-serif;
+    letter-spacing:3px;
+    font-size:0.75rem;
+    color:var(--flare);
+    text-transform:uppercase;
+  }
+  header h1{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:800;
+    letter-spacing:1px;
+    font-size:1.9rem;
+    margin:4px 0 0;
+    text-transform:uppercase;
+    color:var(--paper);
+  }
+  header .version-tag{ font-size:0.7rem; color:#8a967a; letter-spacing:0.4px; margin:0 0 8px; }
+  header .note{ font-size:0.78rem; color:#FFEB3B; line-height:1.5; }
+  .byline{
+    text-align:center;
+    font-size:0.72rem;
+    color:#7C8A6B;
+    letter-spacing:0.5px;
+    margin:6px 0 14px;
+    padding-bottom:10px;
+    border-bottom:1px dotted rgba(233,231,214,0.18);
+  }
+  .byline b{ color:var(--flare); font-weight:600; }
+
+  /* ---- status/trial bar ---- */
+  .status-bar{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    background:rgba(0,0,0,0.22);
+    border:1px solid rgba(233,231,214,0.12);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:14px;
+    font-size:0.82rem;
+  }
+  .status-bar .badge{ font-weight:700; }
+  .status-bar .badge.trial{ color:var(--warn); }
+  .status-bar .badge.expired{ color:var(--flare); }
+  .status-bar .badge.active{ color:var(--ok); }
+  .status-bar .actions{ display:flex; gap:6px; }
+  .status-hint{ font-size:0.76rem; color:var(--flare); text-align:center; font-weight:600; margin:-6px 0 14px; line-height:1.4; }
+
+  .install-banner{
+    display:flex; align-items:center; gap:8px;
+    background:rgba(75,92,52,0.35);
+    border:1px solid var(--moss-light);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:12px;
+  }
+  .install-banner .txt{ flex:1; font-size:0.76rem; color:var(--steel); line-height:1.4; }
+  .install-banner .txt b{ display:block; color:var(--paper); font-size:0.82rem; margin-bottom:2px; }
+  .install-banner .close-x{
+    background:none; border:none; color:var(--steel); font-size:1rem; cursor:pointer; padding:4px;
+  }
+  .ios-install-steps{
+    background:var(--paper); color:var(--ink);
+    border-radius:10px; padding:12px 14px;
+    margin-bottom:12px; font-size:0.82rem; line-height:1.6;
+  }
+  .ios-install-steps b{ color:var(--flare-dark); }
+  .ios-install-steps .btn-ghost{ background:rgba(0,0,0,0.08); color:var(--flare-dark); font-weight:700; }
+
+  .btn{
+    display:inline-block;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    letter-spacing:0.4px;
+    text-transform:uppercase;
+    font-size:0.78rem;
+    padding:8px 12px;
+    border-radius:7px;
+    border:none;
+    cursor:pointer;
+    -webkit-user-select:none; user-select:none;
+  }
+  .btn-primary{ background:var(--flare); color:#fff; }
+  .btn-secondary{ background:var(--moss); color:#fff; }
+  .btn-ghost{ background:rgba(233,231,214,0.1); color:var(--steel); }
+  .btn:active{ transform:scale(0.97); }
+  .btn[disabled]{ opacity:0.45; cursor:not-allowed; }
+
+  /* ---- home grid ---- */
+  .home-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  }
+  .home-tile{
+    background:rgba(0,0,0,0.22);
+    border:1px solid rgba(233,231,214,0.12);
+    border-radius:12px;
+    padding:14px 10px;
+    text-align:center;
+    cursor:pointer;
+  }
+  .home-tile:active{ transform:scale(0.97); }
+  .home-tile .tile-icon{ font-size:1.9rem; margin-bottom:6px; }
+  .home-tile .tile-name{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700; letter-spacing:0.3px;
+    font-size:0.95rem; color:var(--paper);
+    text-transform:uppercase;
+  }
+  .home-tile .tile-desc{ font-size:0.72rem; color:#93a082; margin-top:3px; line-height:1.3; }
+  .home-tile.tile-locked{ position:relative; opacity:0.5; }
+  .home-tile.tile-locked::after{ content:"🔒"; position:absolute; top:6px; right:8px; font-size:0.85rem; }
+  a.home-tile{ display:block; text-decoration:none; }
+  .home-tile.tile-external{ border-color:rgba(200,48,42,0.4); background:rgba(200,48,42,0.08); }
+  .home-tile.tile-external .tile-name{ color:var(--flare); }
+
+  /* ---- app views ---- */
+  .app-view{ display:none; }
+  .app-view.active{ display:block; }
+  .view-header{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .view-header h2{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:800; text-transform:uppercase; letter-spacing:0.5px;
+    font-size:1.25rem; margin:0; color:var(--paper); flex:1;
+  }
+  .btn-back{
+    background:rgba(233,231,214,0.1); color:var(--steel);
+    border:none; border-radius:8px; padding:8px 10px; font-size:1rem; cursor:pointer;
+  }
+
+  .card{
+    background:rgba(0,0,0,0.20);
+    border:1px solid rgba(233,231,214,0.12);
+    border-radius:12px;
+    padding:14px;
+    margin-bottom:12px;
+  }
+  .card h3{
+    font-family:'Barlow Condensed',sans-serif;
+    text-transform:uppercase; letter-spacing:0.4px;
+    font-size:0.95rem; color:var(--flare); margin:0 0 10px;
+  }
+
+  .field-row{
+    display:flex; align-items:center; gap:8px; margin-bottom:8px;
+  }
+  .field-row label{ flex:0 0 40%; font-size:0.82rem; color:var(--steel); }
+  .field-row input[type=text], .field-row input[type=number], .field-row select{
+    flex:1; min-width:0;
+    background:var(--paper); color:var(--ink);
+    border:1px solid rgba(0,0,0,0.2); border-radius:7px;
+    padding:8px 9px; font-size:0.9rem; font-weight:600;
+    text-align:center;
+  }
+  .field-row input::placeholder{ color:#8a8a78; font-weight:400; }
+  .field-row select[id$="-heso"], .field-row input[id$="-am"]{
+    font-weight:800; color:var(--flare-dark); text-align-last:center;
+  }
+
+  .result-box{
+    display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;
+  }
+  .result-item{
+    flex:1; min-width:110px;
+    background:rgba(200,48,42,0.14);
+    border:1px solid rgba(200,48,42,0.35);
+    border-radius:9px; padding:10px; text-align:center;
+  }
+  .result-item .r-label{ font-size:0.74rem; color:#FFC163; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; }
+  .result-item .r-value{ font-family:'Barlow Condensed',sans-serif; font-size:1.35rem; font-weight:800; color:#FFEB3B; text-shadow:0 0 8px rgba(255,235,59,0.35); margin-top:2px; }
+
+  .msg-error{ color:var(--flare); font-size:0.82rem; font-weight:700; margin-top:6px; }
+  .msg-warn{ color:var(--warn); font-size:0.78rem; margin-top:4px; }
+
+  .detail-toggle{ margin-top:8px; width:100%; text-align:center; }
+  .detail-panel{ display:none; margin-top:10px; border-top:1px dashed rgba(233,231,214,0.2); padding-top:8px; }
+  .detail-panel.open{ display:block; }
+  .detail-row{ display:flex; justify-content:space-between; gap:8px; font-size:0.78rem; padding:3px 0; border-bottom:1px dotted rgba(233,231,214,0.08); }
+  .detail-row .d-label{ color:#a9b498; }
+  .detail-row .d-value{ color:var(--paper); font-weight:600; text-align:right; }
+  .detail-row-result{ background:rgba(255,193,99,0.10); border-bottom:1px dotted rgba(255,235,59,0.25); border-radius:5px; padding:4px 6px; margin:1px -6px; }
+  .detail-row-result .d-label{ color:#FFC163; font-weight:700; }
+  .detail-row-result .d-value{ color:#FFEB3B; font-weight:800; text-shadow:0 0 6px rgba(255,235,59,0.3); }
+
+  .quad-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:6px; }
+  .quad-grid .qbox{ background:var(--paper); color:var(--ink); border-radius:7px; padding:8px 4px; text-align:center; }
+  .quad-grid .qbox .ql{ font-size:0.68rem; font-weight:700; }
+  .quad-grid .qbox .qv{ font-size:0.85rem; font-weight:800; margin-top:2px; }
+
+  .subpanel{ display:none; }
+  .subpanel.active{ display:block; }
+
+  .diagram{ display:flex; justify-content:center; margin:2px 0 12px; }
+  .diagram svg{ width:100%; max-width:220px; height:auto; }
+
+  .license-overlay{
+    position:fixed; inset:0; background:rgba(10,13,7,0.92);
+    display:none; align-items:center; justify-content:center; z-index:50; padding:16px;
+  }
+  .license-overlay.active{ display:flex; }
+  .license-box{
+    background:var(--forest); border:1px solid rgba(233,231,214,0.15);
+    border-radius:14px; padding:20px; max-width:400px; width:100%; text-align:center;
+  }
+  .license-box h2{ font-family:'Barlow Condensed',sans-serif; color:var(--paper); text-transform:uppercase; margin-top:0; }
+  .license-box p{ font-size:0.85rem; color:#b7c1a8; line-height:1.5; }
+
+  .info-text{ font-size:0.82rem; color:#c3ccb4; line-height:1.55; text-align:left; }
+  .info-text b{ color:var(--paper); }
+  .price-tag{ background:var(--moss); color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:1.1rem; text-align:center; padding:8px; border-radius:8px; margin:8px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Pháo Binh · Trắc Địa</div>
+    <h1>Giải Toán Pháo Binh</h1>
+    <div class="version-tag">Phiên bản: 3.0</div>
+    <div class="note">Công cụ tính toán trắc địa pháo binh bằng phương pháp logarit</div>
+  </header>
+  <div class="byline">Tác giả: <b>Huỳnh Công Chính</b> - Trường Quân sự QĐ34</div>
+
+  <!-- ============ CÀI ĐẶT LÊN MÀN HÌNH CHÍNH ============ -->
+  <div class="install-banner" id="install-banner" style="display:none;">
+    <div class="txt"><b>📲 Nhấn vào để cài đặt ứng dụng</b>Ứng dụng sẽ được cài vào điện thoại của bạn, lần sau mở trực tiếp bằng icon, không cần tìm lại link</div>
+    <button class="btn btn-primary" id="install-btn">Cài đặt</button>
+    <button class="close-x" id="install-close">✕</button>
+  </div>
+  <div class="ios-install-steps" id="ios-install-steps" style="display:none;">
+    <b>📲 Thêm vào Màn hình chính (iPhone/iPad):</b><br>
+    1. Bấm nút <b>Chia sẻ</b> (hình vuông có mũi tên lên) ở thanh dưới Safari<br>
+    2. Kéo xuống chọn <b>"Thêm vào MH chính"</b> (Add to Home Screen)<br>
+    3. Bấm <b>Thêm</b> — ứng dụng sẽ được cài vào điện thoại, lần sau mở bằng icon ngoài màn hình
+    <div style="text-align:right; margin-top:8px;"><button class="btn btn-ghost" id="ios-install-close">Đã hiểu ✕</button></div>
+  </div>
+
+  <!-- ============ TRẠNG THÁI DÙNG THỬ / BẢN QUYỀN ============ -->
+  <div class="status-bar" id="status-bar">
+    <span class="badge" id="status-badge">—</span>
+    <div class="actions" id="status-actions"></div>
+  </div>
+  <div class="status-hint" id="status-hint" style="display:none;"></div>
+
+  <!-- ============ MÀN HÌNH CHÍNH (BATDAU) ============ -->
+  <div class="app-view active" id="view-home">
+    <div class="home-grid">
+      <div class="home-tile" data-goto="view-tracuu">
+        <div class="tile-icon">📖</div>
+        <div class="tile-name">Tra Cứu</div>
+        <div class="tile-desc">Cự ly, ly giác, bảng logarit</div>
+      </div>
+      <div class="home-tile" data-goto="view-tamgiac">
+        <div class="tile-icon">📐</div>
+        <div class="tile-name">Giải Tam Giác</div>
+        <div class="tile-desc">Từ cự ly và 2 góc</div>
+      </div>
+      <div class="home-tile" data-goto="view-thuantoado">
+        <div class="tile-icon">➡️</div>
+        <div class="tile-name">Giải Thuận Tọa Độ</div>
+        <div class="tile-desc">G + phương vị + cự ly → Q</div>
+      </div>
+      <div class="home-tile" data-goto="view-nghichtoado">
+        <div class="tile-icon">⬅️</div>
+        <div class="tile-name">Giải Nghịch Tọa Độ</div>
+        <div class="tile-desc">2 điểm → cự ly + phương vị</div>
+      </div>
+      <div class="home-tile" data-goto="view-1g">
+        <div class="tile-icon">📍</div>
+        <div class="tile-name">Giải 1G</div>
+        <div class="tile-desc">1 điểm chuẩn → tọa độ Q</div>
+      </div>
+      <div class="home-tile" data-goto="view-2g">
+        <div class="tile-icon">📍📍</div>
+        <div class="tile-name">Giải 2G</div>
+        <div class="tile-desc">2 điểm chuẩn → tọa độ Q</div>
+      </div>
+      <div class="home-tile" data-goto="view-ghpt" style="grid-column:span 2;">
+        <div class="tile-icon">🎯</div>
+        <div class="tile-name">Giải Giao Hội Phía Trước</div>
+        <div class="tile-desc">2 điểm chuẩn quan sát → tọa độ điểm M</div>
+      </div>
+      <a class="home-tile tile-external" style="grid-column:span 2;" href="https://chinhhuynh89-collab.github.io/tinh_luong_QD/" target="_blank" rel="noopener noreferrer">
+        <div class="tile-icon">🔗</div>
+        <div class="tile-name">Trợ Lý Quân Nhân</div>
+        <div class="tile-desc">Ứng dụng khác cùng tác giả — tra lương, phụ cấp...</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ============ TRA CỨU (hub) ============ -->
+  <div class="app-view" id="view-tracuu">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-home">←</button>
+      <h2>Tra Cứu</h2>
+    </div>
+    <div class="home-grid">
+      <div class="home-tile" data-goto="view-doiculy">
+        <div class="tile-icon">📏</div>
+        <div class="tile-name">Cự Ly &amp; Log</div>
+        <div class="tile-desc">Đổi cự ly ⇄ log</div>
+      </div>
+      <div class="home-tile" data-goto="view-lygiaclog">
+        <div class="tile-icon">🧮</div>
+        <div class="tile-name">Ly Giác &amp; Log</div>
+        <div class="tile-desc">Bảng logarit sin/cos/tan</div>
+      </div>
+      <div class="home-tile" data-goto="view-doly" style="grid-column:span 2;">
+        <div class="tile-icon">🔄</div>
+        <div class="tile-name">Độ &amp; Ly Giác</div>
+        <div class="tile-desc">Đổi ly giác ⇄ độ/phút/giây</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ĐỔI CỰ LY & LOG ============ -->
+  <div class="app-view" id="view-doiculy">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-tracuu">←</button>
+      <h2>Cự Ly &amp; Log</h2>
+    </div>
+    <div class="card">
+      <h3>Cự ly → Log</h3>
+      <div class="field-row">
+        <label>Cự ly (m)</label>
+        <input type="text" inputmode="decimal" id="dcl-culy" placeholder="Nhập cự ly">
+      </div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">Log</div><div class="r-value" id="dcl-log-out">—</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Log → Cự ly</h3>
+      <div class="field-row">
+        <label>Log</label>
+        <input type="text" inputmode="decimal" id="dcl-log" placeholder="Nhập log">
+      </div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">Cự ly (m)</div><div class="r-value" id="dcl-culy-out">—</div></div>
+      </div>
+      <div class="msg-error" id="dcl-error"></div>
+    </div>
+  </div>
+
+  <!-- ============ ĐỔI LY GIÁC ⇄ ĐỘ/PHÚT/GIÂY ============ -->
+  <div class="app-view" id="view-doly">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-tracuu">←</button>
+      <h2>Độ &amp; Ly Giác</h2>
+    </div>
+    <div class="card">
+      <div class="field-row">
+        <label>Hệ ly giác</label>
+        <select id="dl-heso"><option value="6000">6000</option><option value="6400">6400</option></select>
+      </div>
+      <div class="field-row"><label>Ly giác</label><input type="text" inputmode="decimal" id="dl-lygiac" placeholder="0" data-angle="1"></div>
+      <div class="field-row"><label>Độ (tổng)</label><input type="text" inputmode="decimal" id="dl-do" placeholder="0"></div>
+      <div class="field-row"><label>Phút (tổng)</label><input type="text" inputmode="decimal" id="dl-phut" placeholder="0"></div>
+      <div class="field-row"><label>Giây (tổng)</label><input type="text" inputmode="decimal" id="dl-giay" placeholder="0"></div>
+      <div class="info-text">Sửa ô nào, 3 ô còn lại tự tính lại theo cùng 1 góc (không phải độ+phút+giây cộng lại).</div>
+    </div>
+  </div>
+
+  <!-- ============ TRA BẢNG LOGARIT ============ -->
+  <div class="app-view" id="view-lygiaclog">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-tracuu">←</button>
+      <h2>Ly Giác &amp; Log</h2>
+    </div>
+    <div class="card">
+      <h3>Tra theo góc</h3>
+      <div class="field-row">
+        <label>Hệ ly giác</label>
+        <select id="llg-heso"><option value="6000">6000</option><option value="6400">6400</option></select>
+      </div>
+      <div class="field-row"><label>Góc (ly giác)</label><input type="text" inputmode="decimal" id="llg-goc" placeholder="Nhập góc" data-angle="1"></div>
+      <div class="msg-error" id="llg-error"></div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">Lg Sin</div><div class="r-value" id="llg-sin">—</div></div>
+        <div class="result-item"><div class="r-label">Lg Cosec</div><div class="r-value" id="llg-cosec">—</div></div>
+      </div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">Lg Tang</div><div class="r-value" id="llg-tan">—</div></div>
+        <div class="result-item"><div class="r-label">Lg Cotang</div><div class="r-value" id="llg-cotang">—</div></div>
+      </div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">Lg Sec</div><div class="r-value" id="llg-sec">—</div></div>
+        <div class="result-item"><div class="r-label">Lg Cos</div><div class="r-value" id="llg-cos">—</div></div>
+      </div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">Cột 5</div><div class="r-value" id="llg-cot5">—</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Tra ngược (nhập log, tìm góc)</h3>
+      <div class="field-row">
+        <label>Hàm</label>
+        <select id="llgr-ham">
+          <option value="sin">Sin</option>
+          <option value="cosec">Cosec</option>
+          <option value="tan">Tan</option>
+          <option value="cotang">Cotang</option>
+          <option value="sec">Sec</option>
+          <option value="cos">Cos</option>
+        </select>
+      </div>
+      <div class="field-row"><label>Giá trị log</label><input type="text" inputmode="decimal" id="llgr-value" placeholder="Nhập log"></div>
+      <div class="msg-error" id="llgr-error"></div>
+      <div class="quad-grid">
+        <div class="qbox"><div class="ql">I</div><div class="qv" id="llgr-i">—</div></div>
+        <div class="qbox"><div class="ql">II</div><div class="qv" id="llgr-ii">—</div></div>
+        <div class="qbox"><div class="ql">III</div><div class="qv" id="llgr-iii">—</div></div>
+        <div class="qbox"><div class="ql">IV</div><div class="qv" id="llgr-iv">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ GIẢI NGHỊCH TỌA ĐỘ ============ -->
+  <div class="app-view" id="view-nghichtoado">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-home">←</button>
+      <h2>Giải Nghịch Tọa Độ</h2>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 0 240 140">
+        <defs><marker id="arrowNTD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8FA86B"/></marker></defs>
+        <line x1="30" y1="120" x2="200" y2="28" stroke="#8FA86B" stroke-width="2.5" marker-end="url(#arrowNTD)"/>
+        <text x="15" y="134" fill="#9FD8F0" font-size="13" font-weight="700">G1 (xG1,yG1)</text>
+        <text x="225" y="20" text-anchor="end" fill="#9FD8F0" font-size="13" font-weight="700">G2 (xG2,yG2)</text>
+        <text x="130" y="62" text-anchor="middle" fill="#EF6F6A" font-size="13" transform="rotate(-28.4 130 62)">d = ?</text>
+        <text x="118" y="88" text-anchor="middle" fill="#EF6F6A" font-size="12" transform="rotate(-28.4 118 88)">(G1,G2) = ?</text>
+      </svg>
+    </div>
+    <div class="card">
+      <div class="field-row"><label>Hệ ly giác</label><select id="ntd-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>xG1</label><input type="text" inputmode="decimal" id="ntd-xg1" placeholder="xG1"></div>
+      <div class="field-row"><label>yG1</label><input type="text" inputmode="decimal" id="ntd-yg1" placeholder="yG1"></div>
+      <div class="field-row"><label>xG2</label><input type="text" inputmode="decimal" id="ntd-xg2" placeholder="xG2"></div>
+      <div class="field-row"><label>yG2</label><input type="text" inputmode="decimal" id="ntd-yg2" placeholder="yG2"></div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">Cự ly d (m)</div><div class="r-value" id="ntd-d">—</div></div>
+        <div class="result-item"><div class="r-label">Phương vị (G1,G2)</div><div class="r-value" id="ntd-pv">—</div></div>
+      </div>
+      <button class="btn btn-ghost detail-toggle" data-detail-toggle="ntd-detail">Xem giải chi tiết ▾</button>
+      <div class="detail-panel" id="ntd-detail"></div>
+    </div>
+  </div>
+
+  <!-- ============ GIẢI THUẬN TỌA ĐỘ ============ -->
+  <div class="app-view" id="view-thuantoado">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-home">←</button>
+      <h2>Giải Thuận Tọa Độ</h2>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 0 240 140">
+        <defs><marker id="arrowTTD" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8FA86B"/></marker></defs>
+        <line x1="30" y1="120" x2="200" y2="28" stroke="#8FA86B" stroke-width="2.5" marker-end="url(#arrowTTD)"/>
+        <text x="20" y="134" fill="#EF6F6A" font-size="14" font-weight="700">Q (?,?)</text>
+        <text x="205" y="20" text-anchor="end" fill="#9FD8F0" font-size="14" font-weight="700">G (xG, yG)</text>
+        <text x="130" y="62" text-anchor="middle" fill="#C7D0BE" font-size="13" transform="rotate(-28.4 130 62)">d</text>
+        <text x="112" y="88" text-anchor="middle" fill="#C7D0BE" font-size="12" transform="rotate(-28.4 112 88)">(QG)</text>
+      </svg>
+    </div>
+    <div class="card">
+      <div class="field-row"><label>Hệ ly giác</label><select id="ttd-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>xG</label><input type="text" inputmode="decimal" id="ttd-xg" placeholder="xG"></div>
+      <div class="field-row"><label>yG</label><input type="text" inputmode="decimal" id="ttd-yg" placeholder="yG"></div>
+      <div class="field-row"><label>Phương vị (QG)</label><input type="text" inputmode="decimal" id="ttd-qg" placeholder="(QG)" data-angle="1"></div>
+      <div class="field-row"><label>Cự ly d (m)</label><input type="text" inputmode="decimal" id="ttd-d" placeholder="d"></div>
+      <div class="msg-error" id="ttd-error"></div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">xQ</div><div class="r-value" id="ttd-xq">—</div></div>
+        <div class="result-item"><div class="r-label">yQ</div><div class="r-value" id="ttd-yq">—</div></div>
+      </div>
+      <button class="btn btn-ghost detail-toggle" data-detail-toggle="ttd-detail">Xem giải chi tiết ▾</button>
+      <div class="detail-panel" id="ttd-detail"></div>
+    </div>
+  </div>
+
+  <!-- ============ GIẢI TAM GIÁC ============ -->
+  <div class="app-view" id="view-tamgiac">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-home">←</button>
+      <h2>Giải Tam Giác</h2>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 -8 240 178">
+        <polygon points="120,18 28,150 212,150" fill="rgba(75,92,52,0.45)" stroke="#8FA86B" stroke-width="2.5"/>
+        <path d="M 46,150 A 20,20 0 0,1 40,132" stroke="#8FBF6A" stroke-width="2" fill="none"/>
+        <path d="M 194,150 A 20,20 0 0,0 200,132" stroke="#8FBF6A" stroke-width="2" fill="none"/>
+        <text x="120" y="10" text-anchor="middle" fill="#9FD8F0" font-size="14" font-weight="700">G</text>
+        <text x="18" y="164" text-anchor="middle" fill="#EF6F6A" font-size="14" font-weight="700">Q</text>
+        <text x="222" y="164" text-anchor="middle" fill="#EF6F6A" font-size="14" font-weight="700">P</text>
+        <text x="120" y="163" text-anchor="middle" fill="#C7D0BE" font-size="12">d</text>
+        <text x="60" y="88" text-anchor="middle" fill="#EF6F6A" font-size="12" transform="rotate(-55.1 60 88)">p = ?</text>
+        <text x="180" y="88" text-anchor="middle" fill="#EF6F6A" font-size="12" transform="rotate(55.1 180 88)">q = ?</text>
+      </svg>
+    </div>
+    <div class="card">
+      <div class="field-row"><label>Hệ ly giác</label><select id="tg-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>Cự ly d (m)</label><input type="text" inputmode="decimal" id="tg-d" placeholder="d"></div>
+      <div class="field-row"><label>Góc P</label><input type="text" inputmode="decimal" id="tg-p" placeholder="Góc P" data-angle="1"></div>
+      <div class="field-row"><label>Góc Q</label><input type="text" inputmode="decimal" id="tg-q" placeholder="Góc Q" data-angle="1"></div>
+      <div class="msg-error" id="tg-error"></div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">Góc G</div><div class="r-value" id="tg-g">—</div></div>
+        <div class="result-item"><div class="r-label">Cạnh p</div><div class="r-value" id="tg-canhp">—</div></div>
+        <div class="result-item"><div class="r-label">Cạnh q</div><div class="r-value" id="tg-canhq">—</div></div>
+      </div>
+      <button class="btn btn-ghost detail-toggle" data-detail-toggle="tg-detail">Xem giải chi tiết ▾</button>
+      <div class="detail-panel" id="tg-detail"></div>
+    </div>
+  </div>
+
+  <!-- ============ GIẢI 1G ============ -->
+  <div class="app-view" id="view-1g">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-home">←</button>
+      <h2>Giải 1G</h2>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 -8 240 178">
+        <polygon points="120,18 28,150 212,150" fill="rgba(75,92,52,0.45)" stroke="#8FA86B" stroke-width="2.5"/>
+        <text x="120" y="10" text-anchor="middle" fill="#9FD8F0" font-size="13" font-weight="700">G (xG,yG)</text>
+        <text x="6" y="164" fill="#EF6F6A" font-size="14" font-weight="700">Q (?,?)</text>
+        <text x="220" y="146" text-anchor="middle" fill="#8FBF6A" font-size="13" font-weight="700">P</text>
+        <text x="120" y="163" text-anchor="middle" fill="#C7D0BE" font-size="12">d</text>
+      </svg>
+    </div>
+    <div class="card">
+      <div class="field-row"><label>Hệ ly giác</label><select id="g1-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>ΔAm</label><input type="text" inputmode="decimal" id="g1-am" placeholder="0" value="0" data-angle="1"></div>
+      <div class="field-row"><label>xG</label><input type="text" inputmode="decimal" id="g1-xg" placeholder="xG"></div>
+      <div class="field-row"><label>yG</label><input type="text" inputmode="decimal" id="g1-yg" placeholder="yG"></div>
+      <div class="field-row"><label>Cự ly d (m)</label><input type="text" inputmode="decimal" id="g1-d" placeholder="d"></div>
+      <div class="field-row"><label>Góc P</label><input type="text" inputmode="decimal" id="g1-p" placeholder="Góc P" data-angle="1"></div>
+      <div class="field-row"><label>Phương vị (QG)</label><input type="text" inputmode="decimal" id="g1-qg" placeholder="(QG)" data-angle="1"></div>
+      <div class="field-row"><label>Phương vị (QP)</label><input type="text" inputmode="decimal" id="g1-qp" placeholder="(QP)" data-angle="1"></div>
+      <div class="msg-error" id="g1-error"></div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">xQ</div><div class="r-value" id="g1-xq">—</div></div>
+        <div class="result-item"><div class="r-label">yQ</div><div class="r-value" id="g1-yq">—</div></div>
+      </div>
+      <button class="btn btn-ghost detail-toggle" data-detail-toggle="g1-detail">Xem giải chi tiết ▾</button>
+      <div class="detail-panel" id="g1-detail"></div>
+    </div>
+  </div>
+
+  <!-- ============ GIẢI 2G ============ -->
+  <div class="app-view" id="view-2g">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-home">←</button>
+      <h2>Giải 2G</h2>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 -6 240 172">
+        <polygon points="30,20 210,20 120,145" fill="rgba(75,92,52,0.45)" stroke="#8FA86B" stroke-width="2.5"/>
+        <text x="15" y="12" fill="#9FD8F0" font-size="13" font-weight="700">G1 (xG1,yG1)</text>
+        <text x="225" y="12" text-anchor="end" fill="#9FD8F0" font-size="13" font-weight="700">G2 (xG2,yG2)</text>
+        <text x="120" y="162" text-anchor="middle" fill="#EF6F6A" font-size="14" font-weight="700">Q (?,?)</text>
+      </svg>
+    </div>
+    <div class="card">
+      <div class="field-row"><label>Hệ ly giác</label><select id="g2-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>ΔAm</label><input type="text" inputmode="decimal" id="g2-am" placeholder="0" value="0" data-angle="1"></div>
+      <div class="field-row"><label>xG1</label><input type="text" inputmode="decimal" id="g2-xg1" placeholder="xG1"></div>
+      <div class="field-row"><label>yG1</label><input type="text" inputmode="decimal" id="g2-yg1" placeholder="yG1"></div>
+      <div class="field-row"><label>xG2</label><input type="text" inputmode="decimal" id="g2-xg2" placeholder="xG2"></div>
+      <div class="field-row"><label>yG2</label><input type="text" inputmode="decimal" id="g2-yg2" placeholder="yG2"></div>
+      <div class="field-row"><label>Phương vị (QG1)</label><input type="text" inputmode="decimal" id="g2-pvqg1" placeholder="(QG1)" data-angle="1"></div>
+      <div class="field-row"><label>Phương vị (QG2)</label><input type="text" inputmode="decimal" id="g2-pvqg2" placeholder="(QG2)" data-angle="1"></div>
+      <div class="msg-error" id="g2-error"></div>
+      <div class="msg-warn" id="g2-warn"></div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">xQ</div><div class="r-value" id="g2-xq">—</div></div>
+        <div class="result-item"><div class="r-label">yQ</div><div class="r-value" id="g2-yq">—</div></div>
+      </div>
+      <button class="btn btn-ghost detail-toggle" data-detail-toggle="g2-detail">Xem giải chi tiết ▾</button>
+      <div class="detail-panel" id="g2-detail"></div>
+    </div>
+  </div>
+
+  <!-- ============ GIẢI GIAO HỘI PHÍA TRƯỚC ============ -->
+  <div class="app-view" id="view-ghpt">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-home">←</button>
+      <h2>Giao Hội Phía Trước</h2>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 -8 240 178">
+        <polygon points="120,18 28,150 212,150" fill="rgba(75,92,52,0.45)" stroke="#8FA86B" stroke-width="2.5"/>
+        <text x="120" y="10" text-anchor="middle" fill="#EF6F6A" font-size="14" font-weight="700">M (?,?)</text>
+        <text x="15" y="164" fill="#9FD8F0" font-size="12" font-weight="700">Q1 (xQ1,yQ1)</text>
+        <text x="225" y="164" text-anchor="end" fill="#9FD8F0" font-size="12" font-weight="700">Q2 (xQ2,yQ2)</text>
+      </svg>
+    </div>
+    <div class="card">
+      <div class="field-row"><label>Hệ ly giác</label><select id="ghpt-heso"><option value="6000">6000</option><option value="6400">6400</option></select></div>
+      <div class="field-row"><label>ΔAm</label><input type="text" inputmode="decimal" id="ghpt-am" placeholder="0" value="0" data-angle="1"></div>
+      <div class="field-row"><label>xQ1</label><input type="text" inputmode="decimal" id="ghpt-xq1" placeholder="xQ1"></div>
+      <div class="field-row"><label>yQ1</label><input type="text" inputmode="decimal" id="ghpt-yq1" placeholder="yQ1"></div>
+      <div class="field-row"><label>xQ2</label><input type="text" inputmode="decimal" id="ghpt-xq2" placeholder="xQ2"></div>
+      <div class="field-row"><label>yQ2</label><input type="text" inputmode="decimal" id="ghpt-yq2" placeholder="yQ2"></div>
+      <div class="field-row"><label>Góc (Q1M)</label><input type="text" inputmode="decimal" id="ghpt-pvq1m" placeholder="(Q1M)" data-angle="1"></div>
+      <div class="field-row"><label>Góc (Q2M)</label><input type="text" inputmode="decimal" id="ghpt-pvq2m" placeholder="(Q2M)" data-angle="1"></div>
+      <div class="msg-error" id="ghpt-error"></div>
+      <div class="msg-warn" id="ghpt-warn"></div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">xM</div><div class="r-value" id="ghpt-xm">—</div></div>
+        <div class="result-item"><div class="r-label">yM</div><div class="r-value" id="ghpt-ym">—</div></div>
+      </div>
+      <button class="btn btn-ghost detail-toggle" data-detail-toggle="ghpt-detail">Xem giải chi tiết ▾</button>
+      <div class="detail-panel" id="ghpt-detail"></div>
+    </div>
+  </div>
+
+  <!-- ============ HƯỚNG DẪN MUA / KÍCH HOẠT ============ -->
+  <div class="app-view" id="view-huongdanmua">
+    <div class="view-header">
+      <button class="btn-back" data-back="view-home">←</button>
+      <h2>Kích Hoạt Bản Quyền</h2>
+    </div>
+    <div class="card">
+      <div class="info-text" style="color:var(--warn);">
+        🔒 Giải Nghịch Tọa Độ, Giải 1G, Giải 2G và Giao Hội Phía Trước chỉ dùng được khi đang <b>dùng thử còn hạn</b> hoặc đã <b>kích hoạt</b>. Tra Cứu, Giải Tam Giác, Giải Thuận Tọa Độ luôn dùng miễn phí.
+      </div>
+      <div class="info-text">
+        Tác giả mất nhiều thời gian để hoàn thành ứng dụng, ứng dụng không chứa quảng cáo — rất mong bạn mua ủng hộ để tác giả có kinh phí phát triển tiếp. Xin cảm ơn!
+      </div>
+      <div class="price-tag">Giá: 200.000 VNĐ</div>
+      <div class="info-text">
+        <b>1.</b> Chuyển khoản đến <b>HUỲNH CÔNG CHÍNH</b>, STK: <b>0978900921</b> (Ngân hàng MB) hoặc Ví Momo <b>0978900921</b>. Nội dung chuyển: "Kích hoạt giải toán PB, Mã KH: ..." (ghi mã số của bạn).<br><br>
+        <b>2.</b> Liên hệ qua <b>Zalo: 0978900921</b> để báo đã chuyển khoản và xin mã kích hoạt.<br><br>
+        <i>Sau đó tác giả sẽ kiểm tra và nhắn mã kích hoạt cho bạn qua đúng Zalo đó. Nếu đợi lâu bạn có thể nhắn lại để đôn đốc. Xin chân thành cảm ơn!</i>
+      </div>
+      <div class="result-box">
+        <div class="result-item"><div class="r-label">Mã KH của bạn</div><div class="r-value" id="hdm-makh">—</div></div>
+      </div>
+      <div class="field-row" style="margin-top:10px;">
+        <label>Mã kích hoạt</label>
+        <input type="text" inputmode="numeric" id="hdm-code" placeholder="Nhập mã kích hoạt">
+      </div>
+      <div class="msg-error" id="hdm-error"></div>
+      <button class="btn btn-primary" id="hdm-activate" style="width:100%; margin-top:8px; padding:10px;">Kích Hoạt</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.obf.js"></script>
+</body>
+</html>
